@@ -13,7 +13,7 @@ import work.blogapi.repository.BoardRepository;
 
 @RequiredArgsConstructor
 @Service
-public class BoardServiceImpl implements BoardService {
+public class BoardServiceImpl implements BoardService<BoardRequestDto, BoardResponseDto> {
 
     private final BoardRepository boardRepository;
 

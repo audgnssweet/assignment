@@ -26,7 +26,7 @@ API는 Restful하게 설계하였습니다.
 @RestController
 public class BoardApiController {
 
-    private final BoardService boardService;
+    private final BoardService<BoardRequestDto, BoardResponseDto> boardService;
 
     @GetMapping("/boards")
     @ResponseStatus(HttpStatus.OK)
