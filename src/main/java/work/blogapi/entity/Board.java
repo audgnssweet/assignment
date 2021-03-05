@@ -44,4 +44,9 @@ public class Board {
         this.title = boardRequestDto.getTitle();
         this.content = boardRequestDto.getContent();
     }
+
+    public void update(BoardRequestDto boardRequestDto) {
+        this.title = boardRequestDto.getTitle();
+        this.content = boardRequestDto.getContent();
+    }
 }

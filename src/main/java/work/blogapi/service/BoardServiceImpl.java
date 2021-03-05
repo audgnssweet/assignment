@@ -30,8 +30,7 @@ public class BoardServiceImpl implements BoardService<BoardRequestDto, BoardResp
         final Board foundBoard = boardRepository.findById(boardId)
             .orElseThrow(BoardNotFoundException::new);
 
-        foundBoard.setTitle(boardRequestDto.getTitle())
-            .setContent(boardRequestDto.getContent());
+        foundBoard.update(boardRequestDto);
         //영속화로 자동업데이트
         return new BoardResponseDto(foundBoard);
     }
