@@ -1,68 +1,50 @@
 package work.blogapi.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import work.blogapi.dto.BoardRequestDto;
-import work.blogapi.dto.BoardResponseDto;
+import work.blogapi.dto.BoardRequest;
 import work.blogapi.entity.Board;
 import work.blogapi.exception.exceptions.BoardNotFoundException;
 import work.blogapi.repository.BoardRepository;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
-public class BoardServiceImpl implements BoardService<BoardRequestDto, BoardResponseDto> {
+public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
 
-    @Transactional
+
     @Override
-    public BoardResponseDto saveBoard(BoardRequestDto boardRequestDto) {
-        final Board savedBoard = boardRepository.save(new Board(boardRequestDto));
-        return new BoardResponseDto(savedBoard);
+    public Board saveBoard(BoardRequest dto) {
+        return boardRepository.save(dto.toEntity());
     }
 
-    @Transactional
     @Override
-    public BoardResponseDto updateBoard(Integer boardId, BoardRequestDto boardRequestDto) {
+    public Board updateBoard(Long boardId, BoardRequest dto) {
         final Board foundBoard = boardRepository.findById(boardId)
             .orElseThrow(BoardNotFoundException::new);
 
-        foundBoard.update(boardRequestDto);
-        //영속화로 자동업데이트
-        return new BoardResponseDto(foundBoard);
+        return foundBoard.updateBoard(dto.getTitle(), dto.getContent());
     }
 
-    /*
-    delete시 http status no content가 반환 (body없음) 이므로 void형으로 반환합니다.
-     */
-    @Transactional
     @Override
-    public void deleteBoard(Integer boardId) {
-        final boolean isExist = boardRepository.existsById(boardId);
-        if (!isExist) {
+    public void deleteBoardById(Long id) {
+        if (!boardRepository.existsById(id)) {
             throw new BoardNotFoundException();
-        } else {
-            boardRepository.deleteById(boardId);
         }
+        boardRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public BoardResponseDto findBoardById(Integer boardId) {
-        final Board foundBoard = boardRepository.findById(boardId)
-            .orElseThrow(BoardNotFoundException::new);
-        return new BoardResponseDto(foundBoard);
+    public Board findBoardById(Long id) {
+        return boardRepository.findById(id).orElseThrow(BoardNotFoundException::new);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<BoardResponseDto> findAllBoards() {
-        return boardRepository.findAll().stream()
-            .map(BoardResponseDto::new)
-            .collect(Collectors.toList());
+    public List<Board> findAllBoards() {
+        return boardRepository.findAll();
     }
-
 }

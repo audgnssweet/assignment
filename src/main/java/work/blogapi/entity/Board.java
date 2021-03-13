@@ -7,46 +7,61 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
-import work.blogapi.dto.BoardRequestDto;
+import org.hibernate.annotations.UpdateTimestamp;
+import work.blogapi.dto.BoardRequest;
 
 /*
 JPA를 이용하여, 자동으로 테이블과 매칭시켰습니다.
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Accessors(chain = true)
+@ToString(of = {"title", "content"})
+@EqualsAndHashCode(of = {"id"})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Table(name = "board")
 @Entity
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "board_id", updatable = false)
+    private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "title", nullable = false, length = 50)
     private String title;
 
     @Lob
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
     @CreationTimestamp
-    private LocalDateTime createDate;
+    @Column(name = "create_at", updatable = false, nullable = false)
+    private LocalDateTime createAt;
 
-    public Board(BoardRequestDto boardRequestDto) {
-        this.title = boardRequestDto.getTitle();
-        this.content = boardRequestDto.getContent();
+    @UpdateTimestamp
+    @Column(name = "update_at", nullable = false)
+    private LocalDateTime updateAt;
+
+    @Builder
+    public Board(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
-    public void update(BoardRequestDto boardRequestDto) {
-        this.title = boardRequestDto.getTitle();
-        this.content = boardRequestDto.getContent();
+    public Board updateBoard(String title, String content) {
+        this.title = title;
+        this.content = content;
+        return this;
     }
+
 }
